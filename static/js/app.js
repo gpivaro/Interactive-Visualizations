@@ -69,19 +69,18 @@ function buildPlot(SubjectID) {
         selecteSample = Object.values(selecteSampleObject[0]);
 
 
-
         // Create an object with sample ids and values to sort the values
         var list_samples = [];
         for (var j = 0; j < selecteSample[1].length; j++)
             list_samples.push({ 'otu_ids': selecteSample[1][j], 'sample_values': selecteSample[2][j], 'otu_labels': selecteSample[3][j] });
 
 
-
         // Sort the samples in descending order of sample values
         list_samples.sort((a, b) => b.sample_values - a.sample_values);
 
         // To retrieve the first 10 items
-        var top10SelSamples = list_samples.slice(0, 10);
+        var top10SelSamples = list_samples;
+        top10SelSamples = top10SelSamples.slice(0, 10)
 
         // Reverse the list due to the Plotly requeriments
         top10SelSamples.reverse()
@@ -98,8 +97,84 @@ function buildPlot(SubjectID) {
         // create an array to be plotted
         var chartData = [trace1];
 
+        // Responsive chart
+        var config = { responsive: true }
+
         // Render the plot to the div tag id "plot"
-        Plotly.newPlot("bar", chartData);
+        Plotly.newPlot("bar", chartData, config);
+
+        // Create a bubble chart that displays each sample.
+        var trace2 = {
+            x: list_samples.map(element => element.otu_ids),
+            y: list_samples.map(element => element.sample_values),
+            mode: 'markers',
+            marker: {
+                size: list_samples.map(element => element.sample_values),
+                color: list_samples.map(element => element.otu_ids),
+                type: "scatter",
+            },
+            text: list_samples.map(element => element.otu_labels)
+        };
+        console.log(list_samples);
+
+        // create an array to be plotted
+        var chartData2 = [trace2];
+
+        var layout = {
+            xaxis: { title: 'OTU ID' },
+            yaxis: { title: 'Sample Values' }
+        }
+
+        // Responsive chart
+        var config = { responsive: true }
+
+        // Render the plot to the div tag id "plot"
+        Plotly.newPlot("bubble", chartData2, layout);
+
+
+
+        // Adapt the Gauge Chart to plot the weekly washing frequency of the individual.
+        var data = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: selecteMetadatavalues[6],
+                gauge: {
+                    axis: { visible: true, range: [0, 9] },
+                    bar: { color: "darkblue" },
+                    steps: [
+                        { range: [0, 1], color: 'rgb(255, 255, 0)' },
+                        { range: [1, 2], color: 'rgb(239, 255, 0)' },
+                        { range: [2, 3], color: 'rgb(223, 255, 0)' },
+                        { range: [3, 4], color: 'rgb(207, 255, 0)' },
+                        { range: [4, 5], color: 'rgb(191, 255, 0)' },
+                        { range: [5, 6], color: 'rgb(175, 255, 0)' },
+                        { range: [6, 7], color: 'rgb(159, 255, 0)' },
+                        { range: [7, 8], color: 'rgb(143, 255, 0)' },
+                        { range: [8, 9], color: 'rgb(127, 255, 0)' },
+                    ]
+                },
+                title: { text: "Scrubs per Week" },
+                type: "indicator",
+                mode: "gauge+number",
+            }
+        ];
+
+        var layout = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+
+        var config = { responsive: true }
+
+        Plotly.newPlot('gauge', data, layout, config);
+
+        d3.select('#gauge')
+            .append('h3')
+            .remove()
+
+        d3.select('.plot-container plotly')
+            .append('h3')
+            .text('Belly Button Washing Frequency')
+
+
+
     });
 };
 
@@ -123,24 +198,3 @@ function updatePage() {
 
 
 d3.select('#selDataset').on('change', updatePage);
-
-
-
-// // Submit Button handler
-// function handleSubmit() {
-//     // Prevent the page from refreshing
-//     d3.event.preventDefault();
-
-//     // Select the input value from the form
-//     var stock = d3.select("#stockInput").node().value;
-//     console.log(stock);
-
-//     // clear the input value
-//     d3.select("#stockInput").node().value = "";
-
-//     // Build the plot with the new stock
-//     buildPlot(stock);
-// }
-
-// // Add event listener for submit button
-// d3.select("#selDataset").on("change", SubjectID);
