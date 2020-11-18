@@ -1,8 +1,9 @@
 
-
+// Create the main function to get the data and generate the plots
 function buildPlot(SubjectID) {
     // Use D3 fetch to read the JSON file
     d3.json("data/samples.json").then((importedData) => {
+
         // Store the imported data to a variable
         var data = importedData;
         console.log(data);
@@ -43,13 +44,15 @@ function buildPlot(SubjectID) {
 
         // Load the metadata painel with the selected metadata
         selecteMetadatavalues = Object.values(metadataKeys[0]);
-        metadataKeys = [`id: ${selecteMetadatavalues[0]}`,
-        `ethnicity: ${selecteMetadatavalues[1]}`,
-        `gender: ${selecteMetadatavalues[2]}`,
-        `age: ${selecteMetadatavalues[3]}`,
-        `location: ${selecteMetadatavalues[4]}`,
-        `bbtype: ${selecteMetadatavalues[5]}`,
-        `wfreq: ${selecteMetadatavalues[6]}`];
+        metadataKeys = [
+            `id: ${selecteMetadatavalues[0]}`,
+            `ethnicity: ${selecteMetadatavalues[1]}`,
+            `gender: ${selecteMetadatavalues[2]}`,
+            `age: ${selecteMetadatavalues[3]}`,
+            `location: ${selecteMetadatavalues[4]}`,
+            `bbtype: ${selecteMetadatavalues[5]}`,
+            `wfreq: ${selecteMetadatavalues[6]}`
+        ];
         d3.select("#sample-metadata")
             .selectAll('p')
             .data(metadataKeys)
@@ -72,7 +75,11 @@ function buildPlot(SubjectID) {
         // Create an object with sample ids and values to sort the values
         var list_samples = [];
         for (var j = 0; j < selecteSample[1].length; j++)
-            list_samples.push({ 'otu_ids': selecteSample[1][j], 'sample_values': selecteSample[2][j], 'otu_labels': selecteSample[3][j] });
+            list_samples.push({
+                'otu_ids': selecteSample[1][j],
+                'sample_values': selecteSample[2][j],
+                'otu_labels': selecteSample[3][j]
+            });
 
 
         // Sort the samples in descending order of sample values
@@ -115,7 +122,6 @@ function buildPlot(SubjectID) {
             },
             text: list_samples.map(element => element.otu_labels)
         };
-        console.log(list_samples);
 
         // create an array to be plotted
         var chartData2 = [trace2];
@@ -128,9 +134,8 @@ function buildPlot(SubjectID) {
         // Responsive chart
         var config = { responsive: true }
 
-        // Render the plot to the div tag id "plot"
-        Plotly.newPlot("bubble", chartData2, layout);
-
+        // Render the plot to the div tag id "bubble"
+        Plotly.newPlot("bubble", chartData2, layout, config);
 
 
         // Adapt the Gauge Chart to plot the weekly washing frequency of the individual.
@@ -153,7 +158,7 @@ function buildPlot(SubjectID) {
                         { range: [8, 9], color: 'rgb(127, 255, 0)' },
                     ]
                 },
-                title: { text: "Scrubs per Week" },
+                title: { text: "<b>Belly Button Washing Frequency</b> <br> Scrubs per Week" },
                 type: "indicator",
                 mode: "gauge+number",
             }
@@ -163,15 +168,21 @@ function buildPlot(SubjectID) {
 
         var config = { responsive: true }
 
+
+
+
+        // d3.select('#gauge')
+        //     .selectAll('div')
+        //     .remove('h2')
+
         Plotly.newPlot('gauge', data, layout, config);
 
-        d3.select('#gauge')
-            .append('h3')
-            .remove()
 
-        d3.select('.plot-container plotly')
-            .append('h3')
-            .text('Belly Button Washing Frequency')
+        // d3.select("main-svg")
+        //     .selectAll('p')
+        //     .append('p')
+        //     .html('<h2>Belly Button Washing Frequency</h2>');
+
 
 
 
@@ -179,17 +190,14 @@ function buildPlot(SubjectID) {
 };
 
 
-buildPlot(940)
-
-
-
 // Event listen to update page based on the dropdown selection
 function updatePage() {
 
     var dropdown = d3.select('#selDataset');
     var dropdownValue = dropdown.property('value');
-    console.log(dropdownValue);
+    // console.log(dropdownValue);
 
+    // Parse the dropdown values as integer
     var SubjectID = parseInt(dropdownValue);
 
     // Build the plot with the new stock
@@ -197,4 +205,9 @@ function updatePage() {
 };
 
 
+// Load the page for the first time with SubjectID = 940
+buildPlot(940);
+
+
+// Handler for the dropdown change
 d3.select('#selDataset').on('change', updatePage);
