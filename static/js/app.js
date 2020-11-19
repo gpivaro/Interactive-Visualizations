@@ -104,6 +104,7 @@ function buildPlot(SubjectID) {
         // create an array to be plotted
         var chartData = [trace1];
 
+
         // Responsive chart
         var config = { responsive: true }
 
@@ -130,6 +131,8 @@ function buildPlot(SubjectID) {
             xaxis: { title: 'OTU ID' },
             yaxis: { title: 'Sample Values' }
         }
+
+
 
         // Responsive chart
         var config = { responsive: true }
@@ -164,27 +167,23 @@ function buildPlot(SubjectID) {
             }
         ];
 
-        var layout = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+        var layout = {
+            autosize: false,
+            width: 500,
+            height: 500,
+            margin: {
+                l: 30,
+                r: 100,
+                b: 0,
+                t: 0,
+                pad: 4
+            },
+        };
 
         var config = { responsive: true }
 
 
-
-
-        // d3.select('#gauge')
-        //     .selectAll('div')
-        //     .remove('h2')
-
         Plotly.newPlot('gauge', data, layout, config);
-
-
-        // d3.select("main-svg")
-        //     .selectAll('p')
-        //     .append('p')
-        //     .html('<h2>Belly Button Washing Frequency</h2>');
-
-
-
 
     });
 };
